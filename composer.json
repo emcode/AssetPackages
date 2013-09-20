@@ -1,0 +1,24 @@
+{
+    "name": "simplercode/asset-packages",
+    "description": "AssetPackages is ZF2 module for including JS and CSS assets based on configuration",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "zf2", "assets", "view"
+    ],
+    "homepage": "https://github.com/emcode/AssetPackages",
+    "authors": [
+        {
+            "name": "emcode",
+            "email": "michal@simplercode.com",
+            "homepage": "http://simplercode.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "zendframework/zendframework" : "2.*"
+    },
+    "autoload": {
+        "psr-0": { "AssetPackages": "src/" }
+    }
+}
