@@ -8,41 +8,40 @@ Introduction
 AssetPackages ZF2 module represents a little bit more abstract approach to including CSS and JS in your templates.
 Normally if you want to include bootstrap or some other custom library usually you need to include both CSS and JS files.
 You might do this like that:
+```php
+<?php echo $this->headLink()
+                ->appendStylesheet('/assets/some-module/bootstrap/css/bootstrap.css')
+                ->appendStylesheet('/assets/custom-module/file-1.css')
+                ->appendStylesheet('/assets/custom-module/file-2.css') ?>
 
-        <?php echo $this->headLink()
-                        ->appendStylesheet('/assets/some-module/bootstrap/css/bootstrap.css')
-                        ->appendStylesheet('/assets/custom-module/file-1.css')
-                        ->appendStylesheet('/assets/custom-module/file-2.css') ?>
-
-        <?php echo $this->inlineScript()
-                        ->appendFile('/assets/some-module/bootstrap/js/bootstrap.js')
-                        ->appendFile('/assets/custom-module/file-1.js')
-                        ->appendFile('/assets/custom-module/file-2.js')
-                        ->appendFile('/assets/custom-module/file-3.js') ?>
-
-After enabling AssetPackages module you can include whole libraries using new view helper:
-
-    <?php $this->assetPackage()->append('bootstrap')
-                               ->append('custom-lib') ?>
-
+<?php echo $this->inlineScript()
+                ->appendFile('/assets/some-module/bootstrap/js/bootstrap.js')
+                ->appendFile('/assets/custom-module/file-1.js')
+                ->appendFile('/assets/custom-module/file-2.js')
+                ->appendFile('/assets/custom-module/file-3.js') ?>
+```
+After enabling **AssetPackages** module you can include whole libraries using new **assetPackage** view helper:
+```php
+<?php $this->assetPackage()->append('bootstrap')
+                           ->append('custom-lib') ?>
+```
 Given right configuration, above code will include both CSS and JS files for selected libraries in right order. As with standard ZF2
- view helpers you can influence order of included assets using either append and prepend methods.
-
-        <?php $this->assetPackage()->append('custom-lib')
-                                   ->prepend('jquery') ?>
-
-Using configuration you can decide wheather script tags should be added to head section or as inline script tags within body.
-Internally new assetPackage view helper works as wrapper for headLink, headScript and inlineScript helpers so you can use those
-as well at the same time without any problems. At the end (probably in your layout) you should render tags in standard way:
-
-        <?php echo $this->headLink() ?>
-        <?php echo $this->headScript() ?>
-        <?php echo $this->inlineScript() ?>
-
+ view helpers you can influence order of included assets using either **append** and **prepend** methods.
+```php
+<?php $this->assetPackage()->append('custom-lib')
+                           ->prepend('jquery') ?>
+```
+You can decide wheather script tags should be added to head section or as inline script tags within body.
+Internally **assetPackage** view helper works as wrapper for **headLink**, **headScript** and **inlineScript** helpers so you can use those
+as well at the same time without any problems. At the end - probably in your layout - you should render tags in standard way:
+```php
+<?php echo $this->headLink() ?>
+<?php echo $this->headScript() ?>
+<?php echo $this->inlineScript() ?>
+```
 
 Configuration
 -----
-
 1. Enable AssetPackages module in your application.config.php
 2. In any config file you can configure yout libraries, for ex:
 
@@ -79,12 +78,10 @@ Configuration
     <?php echo $this->inlineScript() ?>
 
     ```
-
-Including JS scripts in HEAD or in BODY
+Including scripts in head or within body
 -----
-
-There is also "scripts_placement" flag that lets you decide where scripts should be added. This flag receives
-values: inline or head (default is: inline).
+There is also **scripts_placement** flag that lets you decide where scripts should be added. This flag receives
+values: **inline** or **head** (default is: inline).
 ```php
 array(
     'asset_packages' => array(
@@ -119,9 +116,7 @@ array(
     ),
 )
 ```
-
 Using it with other modules
 -----
-
-From what I seen it this module works well with AssetAliases module enabled at the same time. I have to investigate
-if it would be usefull to usid with AssetManager - but there shouldn't be any problem.
+From what I seen it this module works well with **AssetAliases** module enabled at the same time. I have to investigate
+if it would be usefull to usid with **AssetManager** - but there shouldn't be any problems.
