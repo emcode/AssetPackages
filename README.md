@@ -24,7 +24,7 @@ After enabling **AssetPackages** module you can include whole libraries using ne
 <?php $this->assetPackage()->append('bootstrap')
                            ->append('custom-lib') ?>
 ```
-Given right configuration, above code will include both CSS and JS files for selected libraries in right order. As with standard ZF2
+Given right configuration, above code will include both CSS and JS files for selected libraries in correct order. As with standard ZF2
  view helpers you can influence order of included assets using either `append` and `prepend` methods.
 ```php
 <?php $this->assetPackage()->append('custom-lib')
