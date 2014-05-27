@@ -3,6 +3,7 @@
 namespace AssetPackages\View\Helper;
 
 use AssetPackages\Config\AssetPackagesConfig;
+use AssetPackages\Config\PackageConfig;
 use stdClass;
 use Zend\View;
 use Zend\View\Exception;
@@ -16,28 +17,59 @@ class AssetPackage extends AbstractStandalone
     protected $config;
 
     /**
+     * @var bool
+     */
+    protected $isGroupingEnabled;
+
+    /**
      * Constructor
      */
     public function __construct(AssetPackagesConfig $config)
     {
         $this->config = $config;
+        $this->isGroupingEnabled = $config->areCompressionGroupsEnabled();
     }
 
     public function append($packageName)
     {
         $packageConfig = $this->config->getPackageConfiguration($packageName);
 
-        $styles = $packageConfig->getStyles();
-
-        if ($styles)
+        if ($packageConfig->hasAnyStyles())
         {
-            foreach($styles as $stylePath)
+            $styleGroup = $this->resolveStyleGroup($packageConfig, $packageName);
+
+            if (null !== $styleGroup)
             {
-                $this->getView()->headLink()->appendStylesheet($stylePath);
+                $this->getView()->headLink()->appendStylesheet($styleGroup);
+
+            } else
+            {
+                $styles = $packageConfig->getStyles();
+
+                foreach($styles as $stylePath)
+                {
+                    $this->getView()->headLink()->appendStylesheet($stylePath);
+                }
             }
         }
 
+        if (!$packageConfig->hasAnyScripts())
+        {
+            return $this;
+        }
+
+        $scriptGroup = $this->resolveScriptGroup($packageConfig, $packageName);
+
+        if (null !== $scriptGroup)
+        {
+            $this->getView()->inlineScript()->appendFile($scriptGroup);
+            return $this;
+        }
+
+
         $headScripts = $packageConfig->getHeadScripts();
+        $inlineScripts = $packageConfig->getInlineScripts();
+        $haveScriptGroup = false;
 
         if ($headScripts)
         {
@@ -46,8 +78,6 @@ class AssetPackage extends AbstractStandalone
                 $this->getView()->headScript()->appendFile($scriptPath);
             }
         }
-
-        $inlineScripts = $packageConfig->getInlineScripts();
 
         if ($inlineScripts)
         {
@@ -60,21 +90,81 @@ class AssetPackage extends AbstractStandalone
         return $this;
     }
 
+    protected function resolveStyleGroup(PackageConfig $packageConfig, $packageName)
+    {
+        $result = null;
+
+        if ($this->isGroupingEnabled && $packageConfig->hasAnyStyles())
+        {
+            $groupName = $this->config->getStyleCompressionGroupForPackage($packageName);
+
+            if (null !== $groupName)
+            {
+                $result = $groupName;
+            }
+        }
+
+        return $result;
+    }
+
+    protected function resolveScriptGroup(PackageConfig $packageConfig, $packageName)
+    {
+        $result = null;
+
+        if ($this->isGroupingEnabled && $packageConfig->hasAnyScripts())
+        {
+            $groupName = $this->config->getScriptCompressionGroupForPackage($packageName);
+
+            if (null !== $groupName)
+            {
+                $result = $groupName;
+            }
+        }
+
+        return $result;
+    }
+
+
     public function prepend($packageName)
     {
         $packageConfig = $this->config->getPackageConfiguration($packageName);
 
-        $styles = $packageConfig->getStyles();
-
-        if ($styles)
+        if ($packageConfig->hasAnyStyles())
         {
-            foreach($styles as $stylePath)
+            $styleGroup = $this->resolveStyleGroup($packageConfig, $packageName);
+
+            if (null !== $styleGroup)
             {
-                $this->getView()->headLink()->prependStylesheet($stylePath);
+                $this->getView()->headLink()->prependStylesheet($styleGroup);
+
+            } else
+            {
+                $styles = $packageConfig->getStyles();
+
+                foreach($styles as $stylePath)
+                {
+                    $this->getView()->headLink()->prependStylesheet($stylePath);
+                }
             }
         }
 
+        if (!$packageConfig->hasAnyScripts())
+        {
+            return $this;
+        }
+
+        $scriptGroup = $this->resolveScriptGroup($packageConfig, $packageName);
+
+        if (null !== $scriptGroup)
+        {
+            $this->getView()->inlineScript()->prependFile($scriptGroup);
+            return $this;
+        }
+
+
         $headScripts = $packageConfig->getHeadScripts();
+        $inlineScripts = $packageConfig->getInlineScripts();
+        $haveScriptGroup = false;
 
         if ($headScripts)
         {
@@ -83,8 +173,6 @@ class AssetPackage extends AbstractStandalone
                 $this->getView()->headScript()->prependFile($scriptPath);
             }
         }
-
-        $inlineScripts = $packageConfig->getInlineScripts();
 
         if ($inlineScripts)
         {

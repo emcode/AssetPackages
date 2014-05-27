@@ -19,12 +19,43 @@ class AssetPackagesConfig extends AbstractOptions
     /**
      * @var array
      */
+    protected $__styleCompressionGroups__;
+
+    /**
+     * @var array
+     */
+    protected $__scriptCompressionGroups__;
+
+    /**
+     * @var array
+     */
     protected $packages;
 
     /**
      * @var string
      */
     protected $scriptsPlacement = PackageConfig::INLINE;
+
+    /**
+     * @var array
+     */
+    protected $compressionGroups;
+
+    /**
+     * @param array $compressionGroups
+     */
+    public function setCompressionGroups($compressionGroups)
+    {
+        $this->compressionGroups = $compressionGroups;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCompressionGroups()
+    {
+        return $this->compressionGroups;
+    }
 
     /**
      * @param string $scriptsPlacement
@@ -82,7 +113,90 @@ class AssetPackagesConfig extends AbstractOptions
     public function isPackageConfigured($packageName)
     {
         return (is_int($packageName) || is_string($packageName)) && is_array($this->packages) && isset($this->packages[$packageName]);
-   }
+    }
+
+    public function areCompressionGroupsEnabled()
+    {
+        return (bool) (isset($this->compressionGroups['enabled']) && $this->compressionGroups['enabled']);
+    }
+
+    public function getStyleCompressionGroups()
+    {
+        if (null !== $this->__styleCompressionGroups__)
+        {
+            return $this->__styleCompressionGroups__;
+        }
+
+        if (isset($this->compressionGroups['styles']) && is_array($this->compressionGroups['styles']))
+        {
+            $this->__styleCompressionGroups__ = $this->compressionGroups['styles'];
+            
+        } else
+        {
+            $this->__styleCompressionGroups__ = false;
+        }
+
+        return $this->__styleCompressionGroups__;
+    }
+
+    public function getScriptCompressionGroups()
+    {
+        if (null !== $this->__scriptCompressionGroups__)
+        {
+            return $this->__scriptCompressionGroups__;
+        }
+
+        if (isset($this->compressionGroups['scripts']) && is_array($this->compressionGroups['scripts']))
+        {
+            $this->__scriptCompressionGroups__ = $this->compressionGroups['scripts'];
+
+        } else
+        {
+            $this->__scriptCompressionGroups__ = false;
+        }
+
+        return $this->__scriptCompressionGroups__;
+    }
+
+    public function getStyleCompressionGroupForPackage($packageName)
+    {
+        $allGroups = $this->getStyleCompressionGroups();
+
+        if (!$allGroups) return null;
+
+        $result = null;
+
+        foreach($allGroups as $groupName => $packagesInGroup)
+        {
+            if (in_array($packageName, $packagesInGroup))
+            {
+                $result = $groupName;
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getScriptCompressionGroupForPackage($packageName)
+    {
+        $allGroups = $this->getScriptCompressionGroups();
+
+        if (!$allGroups) return null;
+
+        $result = null;
+
+        foreach($allGroups as $groupName => $packagesInGroup)
+        {
+            if (in_array($packageName, $packagesInGroup))
+            {
+                $result = $groupName;
+                break;
+            }
+        }
+
+        return $result;
+    }
 
     /**
      * @param $packageName

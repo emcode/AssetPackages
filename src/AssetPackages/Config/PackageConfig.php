@@ -56,6 +56,14 @@ class PackageConfig extends AbstractOptions
     }
 
     /**
+     * @return bool
+     */
+    public function hasAnyScripts()
+    {
+        return !empty($this->scripts);
+    }
+
+    /**
      * @return array
      */
     public function getScripts()
@@ -123,6 +131,11 @@ class PackageConfig extends AbstractOptions
     public function getStyles()
     {
         return $this->styles;
+    }
+
+    public function hasAnyStyles()
+    {
+        return !empty($this->styles);
     }
 
 }
